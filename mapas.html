@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Mapa</title>
+	<style type="text/css">
+	body{margin: 0;}
+	html,body,#map-canvas{
+	  width: 100%;
+	  height: 100%;
+	}
+	.labels {
+     color: #fff;
+     background-color: #ff4444;
+     font-family: "Lucida Grande", "Arial", sans-serif;
+     font-size: 10px;
+     font-weight: bold;
+     text-align: center;
+     width: 10px;     
+     white-space: nowrap;
+   }
+	</style>
+</head>
+<body>
+	<div id="map-canvas"></div>
+	<div id="locations"></div>
+	<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=geometry"></script>
+	<script src="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerwithlabel/1.1.8/src/markerwithlabel.js"></script>
+	<script>
+	var geocoder, map;
+	var markColors = ['c93232', 'eaa42a', 'bbbbbb']; 
+
+	var zoom = 12;
+	var store = {"lat":"21.105656","lng":"-101.678250"}; //centrar
+	var hotArea = 2; //km
+	var warmArea = 10; //km
+	var printInnerLoactions = true;
+
+	var locations = [
+	  {"lat":"21.106291","lng":"-101.648191"},
+	  {"lat":"20.516599","lng":"-100.805938"},
+	  {"lat":"20.673088","lng":"-101.348002"},
+	  {"lat":"20.513514","lng":"-100.828522"},
+	  {"lat":"21.120485","lng":"-101.676374"},
+	  {"lat":"20.390663","lng":"-101.182891"},
+	  {"lat":"20.581306","lng":"-101.203053"},
+	  {"lat":"21.123635","lng":"-101.681607"},
+	  {"lat":"20.901841","lng":"-100.721246"},
+	  {"lat":"20.539266","lng":"-100.844248"},
+	  {"lat":"20.537501","lng":"-100.824874"},
+	  {"lat":"20.519841","lng":"-100.815880"},
+	  {"lat":"21.145235","lng":"-101.703038"},
+	  {"lat":"21.101250","lng":"-101.680343"},
+	  {"lat":"21.143166","lng":"-101.686593"},
+	  {"lat":"21.127969","lng":"-101.667250"},
+	  {"lat":"20.951332","lng":"-101.417695"},
+	  {"lat":"20.940871","lng":"-101.420024"},
+	  {"lat":"21.121250","lng":"-101.683093"},
+	  {"lat":"21.134713","lng":"-101.681127"},
+	  {"lat":"21.101677","lng":"-101.679564"},
+	  {"lat":"21.126349","lng":"-101.667635"},
+	  {"lat":"20.512639","lng":"-100.799981"},
+	  {"lat":"20.581346","lng":"-101.203096"},
+	  {"lat":"21.091496","lng":"-101.658382"},
+	  {"lat":"21.120429","lng":"-101.676514"},
+	  {"lat":"20.390723","lng":"-101.182859"},
+	  {"lat":"20.539255","lng":"-100.844267"},
+	  {"lat":"21.142887","lng":"-101.686719"},
+	  {"lat":"20.513161","lng":"-100.809937"},
+	  {"lat":"20.665680","lng":"-101.346912"},
+	  {"lat":"20.654938","lng":"-101.375288"},
+	  {"lat":"21.093877","lng":"-101.655979"},
+	  {"lat":"20.693345","lng":"-101.358128"},
+	  {"lat":"21.017680","lng":"-101.256346"},
+	  {"lat":"21.128014","lng":"-101.697711"},
+	  {"lat":"21.122886","lng":"-101.669351"},
+	  {"lat":"20.688492","lng":"-101.355525"},
+	  {"lat":"21.150541","lng":"-101.711488"},
+	  {"lat":"21.000980","lng":"-101.244369"},
+	  {"lat":"21.169617","lng":"-101.700058"},
+	  {"lat":"21.122062","lng":"-101.684470"},
+	  {"lat":"20.535464","lng":"-100.829842"},
+	  {"lat":"20.509197","lng":"-100.817677"},
+	  {"lat":"20.667505","lng":"-101.340309"},
+	  {"lat":"21.120429","lng":"-101.676535"},
+	  {"lat":"20.673524","lng":"-101.350612"},
+	  {"lat":"20.593086","lng":"-101.194098"},
+	  {"lat":"21.018641","lng":"-101.859157"},
+	  {"lat":"20.690731","lng":"-101.364637"},
+	  {"lat":"20.393407","lng":"-101.184489"},
+	  {"lat":"21.154680","lng":"-101.699970"},
+	  {"lat":"21.150592","lng":"-101.674310"},
+	  {"lat":"21.120703","lng":"-101.678022"},
+	  {"lat":"20.518482","lng":"-100.819340"},
+	  {"lat":"21.126625","lng":"-101.682449"},
+	  {"lat":"21.142946","lng":"-101.686593"},
+	  {"lat":"21.107967","lng":"-101.661820"},
+	  {"lat":"20.453091","lng":"-101.529756"},
+	  {"lat":"21.144178","lng":"-101.694950"},
+	  {"lat":"20.564916","lng":"-101.189436"},
+	  {"lat":"21.102116","lng":"-101.672762"},
+	  {"lat":"20.682596","lng":"-101.353927"},
+	  {"lat":"21.150125","lng":"-100.955990"},
+	  {"lat":"21.166500","lng":"-101.668338"},
+	  {"lat":"21.133647","lng":"-101.669938"},
+	  {"lat":"20.674174","lng":"-101.348100"},
+	  {"lat":"20.974758","lng":"-101.292145"},
+	  {"lat":"21.106588","lng":"-101.677192"},
+	  {"lat":"21.017440","lng":"-101.255901"},
+	  {"lat":"21.018241","lng":"-101.258699"},
+	  {"lat":"21.012661","lng":"-101.251514"},
+	  {"lat":"20.571160","lng":"-101.197127"},
+	  {"lat":"20.568212","lng":"-101.199079"},
+	  {"lat":"20.521182","lng":"-100.809995"},
+	  {"lat":"20.712061","lng":"-100.756896"},
+	  {"lat":"21.019614","lng":"-101.261066"},
+	  {"lat":"21.142984","lng":"-101.682109"},
+	  {"lat":"20.679406","lng":"-101.351053"},
+	  {"lat":"20.582326","lng":"-100.420665"},
+	  {"lat":"21.079471","lng":"-101.638839"},
+	  {"lat":"21.104972","lng":"-101.668321"},
+	  {"lat":"21.116520","lng":"-101.684450"},
+	  {"lat":"21.028855","lng":"-101.855591"},
+	  {"lat":"21.125694","lng":"-101.683917"},
+	  {"lat":"20.920625","lng":"-100.743076"},
+	  {"lat":"21.022731","lng":"-101.258818"},
+	  {"lat":"21.019160","lng":"-101.857686"},
+	  {"lat":"20.570572","lng":"-101.199721"},
+	  {"lat":"20.570900","lng":"-101.201125"},
+	  {"lat":"20.547960","lng":"-100.799705"},
+	  {"lat":"20.518883","lng":"-100.804402"},
+	  {"lat":"20.486688","lng":"-100.966482"},
+	  {"lat":"20.517394","lng":"-100.828143"},
+	  {"lat":"20.672491","lng":"-101.341309"},
+	  {"lat":"20.676903","lng":"-101.348926"},
+	  {"lat":"20.675013","lng":"-101.347619"},
+	  {"lat":"20.555026","lng":"-101.200245"},
+	  {"lat":"21.124234","lng":"-101.682051"},
+	  {"lat":"20.907516","lng":"-100.747753"},
+	  {"lat":"21.150892","lng":"-101.631374"},
+	  {"lat":"21.119507","lng":"-101.643556"},
+	  {"lat":"20.029929","lng":"-100.719331"},
+	  {"lat":"21.106199","lng":"-101.648302"},
+	 		];
+	var total = locations.length;
+	var center = new google.maps.LatLng(store.lat, store.lng);
+	hotArea *= 1000;
+	warmArea *= 1000;
+	var locationsOK = [];
+	var idOK = [];
+
+	function initialize() {
+		var mapOptions = {
+			zoom: zoom,
+			center: center,
+			mapTypeControl: false,
+	    	disableDefaultUI: true
+	    };
+	  var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+	  var marker, i = 0, m;		
+		for (m = 0; m < total; m++) { 
+			setTimeout(function() {	
+				var pos = new google.maps.LatLng(locations[i].lat, locations[i].lng);
+				var distancia = google.maps.geometry.spherical.computeDistanceBetween(center, pos);
+				d = 2;
+				if(distancia < warmArea) {
+					locationsOK.push(locations[i]);
+					idOK.push(i+1);
+				} 
+				if(distancia < warmArea) d = 1;
+				if(distancia < hotArea) d = 0;
+
+				marker = new google.maps.Marker({
+					position: pos,
+					map: map,
+					// icon: 'http://thydzik.com/thydzikGoogleMap/markerlink.php?text='+(i+1)+'&color='+markColors[d],
+					icon: 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=0.5|0|'+markColors[d]+'|8|_|'+(i+1),
+					zIndex: i+1,
+					title: ''+(i+1)+' ['+ locations[i].lat +', '+ locations[i].lng +']',
+					animation: google.maps.Animation.DROP
+				});
+			  google.maps.event.addListener(marker, 'click', function() {
+			  	// console.log(this.position);
+					var lat = this.position.B;
+					var lng = this.position.k;
+					window.open("http://maps.google.com.mx/maps?q="+lng+"+"+lat);
+				});  
+				i++;
+				if(i == total && printInnerLoactions){
+					alert(locationsOK.length);
+					var p = document.getElementById('locations');
+					st = JSON.stringify(locationsOK);
+					p.innerHTML = 'var locations = <br>' + st.replace(/},/gi, '},<br>') + ';<br><br><br>'+ idOK.join(', ');
+				}
+			}, m * 100);
+		}
+			marker = new google.maps.Marker({
+				position: center,
+				map: map,
+				zIndex: total+1,
+				// icon: 'http://maps.google.com/mapfiles/kml/pal5/icon14.png'
+				icon: 'http://maps.google.com/mapfiles/arrow.png'
+			});
+			var circleRed = {
+		      strokeColor: '#FF0000',
+		      strokeOpacity: 0.15,
+		      strokeWeight: 1,
+		      fillColor: '#FF0000',
+		      fillOpacity: 0.08,
+		      map: map,
+		      center: center,
+		      radius: warmArea
+		    };
+		    cityCircle = new google.maps.Circle(circleRed);
+			var circleRed = {
+		      strokeColor: '#FF0000',
+		      strokeOpacity: 0.4,
+		      strokeWeight: 2,
+		      fillColor: '#FF0000',
+		      fillOpacity: 0.2,
+		      map: map,
+		      center: center,
+		      radius: hotArea
+		    };
+		    cityCircle = new google.maps.Circle(circleRed);
+		
+}
+
+	google.maps.event.addDomListener(window, 'load', initialize);
+	</script>
+</body>
+</html>
